@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^7.1.2",
     "dotenv": "^8.2.0",
     "electron": "^9.0.2",
+    "mongoose": "^5.9.18",
     "node-fetch": "^2.6.0",
     "numeral": "^2.0.6",
     "react": "^16.13.1",

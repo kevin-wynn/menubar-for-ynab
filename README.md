@@ -4,6 +4,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 To get this project set up locally clone it down and `yarn install`
 
+You will need to create a `.env` file that contains:
+
+```
+YNAB_TOKEN=<<YOUR YNAB PERSONAL TOKEN>>
+```
+
 In 1 terminal run:
 
 ### `yarn start`
@@ -11,3 +17,7 @@ In 1 terminal run:
 
 ### `yarn start:electron`
 - This starts the electron app itself
+
+You should then see the app running in the menu bar and be able to interact.
+
+TODO: build process
