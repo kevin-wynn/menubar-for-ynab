@@ -4,6 +4,7 @@ const { app, Menu, Tray, nativeImage, BrowserWindow, session } = require('electr
 const numeral = require('numeral')
 const { store } = require('../electron/store')
 const { authUser, getAccountsAndBalancesForUser } = require('../services/user')
+const CronJob = require('cron').CronJob
 
 let tray
 let mainWindow
@@ -36,10 +37,8 @@ const signIn = () => {
     const isAuth = await authUser(code)
 
     if(isAuth) {
-      console.log('hererere');
-
       // close the window out and update menu with accounts
-      mainWindow = null
+      if(mainWindow) mainWindow.hide()
       const accounts = await getAccountsAndBalancesForUser()
       parseAccountsForMenu(accounts)
     }
@@ -51,7 +50,7 @@ const signIn = () => {
   })
   mainWindow.loadURL(ynabUrl)
   mainWindow.on('closed', function () {
-    mainWindow = null
+    mainWindow.hide()
   })
 }
 
@@ -60,22 +59,28 @@ const setAccountAsTitle = (menuItem) => {
 }
 
 const getUserAccountsAndSetupMenu = async () => {
-  console.log('here');
-
   const accounts = await getAccountsAndBalancesForUser()
   parseAccountsForMenu(accounts)
+  if(mainWindow) mainWindow.hide()
+
+  // cron for refreshing accounts ever 30 minutes
+  const job = new CronJob('*/30 * * * *', function() {
+    getUserAccountsAndSetupMenu();
+  }, null, true);
+  job.start();
 }
 
 const parseAccountsForMenu = (accounts) => {
   accounts.forEach((account, i) => {
     dynamicMenu.unshift({
-      label: `${[account.name]}: ${numeral(account.balance*5.34).format('$0,0.00')}`,
+      label: `${[account.name]}: ${numeral(account.balance/1000).format('$0,0.00')}`,
       type: 'normal',
       click: (menuItem) => setAccountAsTitle(menuItem)
     })
 
     if(accounts.length === i+1) {
       setupTrayAndMenu('Select an account...', dynamicMenu)
+      if(mainWindow) mainWindow.hide()
     }
   })
 }
@@ -92,8 +97,6 @@ app.on('window-all-closed', (e) => {
 
 app.whenReady().then(() => {
   tray = new Tray(nativeImage.createEmpty())
-  console.log('woyyoyo:', store.get('ynabUserId'));
-
   if(store.get('ynabUserId')) {
     getUserAccountsAndSetupMenu()
   } else {

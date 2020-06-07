@@ -1,4 +1,10 @@
-## YNAB-Menubar
+# Menubar for YNAB
+
+## Installation
+
+
+
+## Development
 
 To get this project set up locally clone it down and `yarn install`
 
@@ -11,3 +17,5 @@ YNAB_REDIRECT_URL=<<YOUR YNAB REDIRECT URL>>
 ```
 
 In your terminal run `yarn start` to start the electron app.
+
+Work in your own branch off `master` and put in a pull request for any new features or work.
