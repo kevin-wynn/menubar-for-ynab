@@ -1,77 +1,102 @@
 require('dotenv').config()
-const path = require('path')
-const url = require('url')
-const { app, Menu, Tray, nativeImage, BrowserWindow, ipcMain } = require('electron')
-const { channels } = require('../src/constants')
+const queryString = require('query-string')
+const { app, Menu, Tray, nativeImage, BrowserWindow, session } = require('electron')
 const numeral = require('numeral')
-const fetch = require('node-fetch')
+const { store } = require('../electron/store')
+const { authUser, getAccountsAndBalancesForUser } = require('../services/user')
 
-const YNABPath = 'https://api.youneedabudget.com/v1';
+let tray
+let mainWindow
+let dynamicMenu = [
+  { label: 'Sign Out', type: 'normal', click: () => signOut() },
+  { role: 'quit', label: 'Quit', type: 'normal' }
+]
 
-let tray;
-let mainWindow;
+const initialMenu = [
+  { label: 'Sign In', type: 'normal', click: () => signIn() },
+  { role: 'quit', label: 'Quit', type: 'normal' }
+]
 
-const getYNABDetails = () => {
-  let balances = []
-  fetch(`${YNABPath}/budgets`, {
-    headers: {
-      Authorization: `Bearer ${process.env.YNAB_TOKEN}`
-    }
-  })
-  .then(resp => resp.json())
-  .then(json => {
-    json.data.budgets.forEach(budget => {
-      const allAccountsPath = `${YNABPath}/budgets/${budget.id}/accounts`
-      fetch(allAccountsPath, {
-        headers: {
-          Authorization: `Bearer ${process.env.YNAB_TOKEN}`
-        }
-      })
-      .then(resp => resp.json())
-      .then(json => {
-        json.data.accounts.forEach(account => {
-          balances.push(`${[account.name]}: ${numeral(account.balance*5.34).format('$0,0.00')}`);
-        })
-
-        tray.setTitle(balances.join(' '))
-      })
-    })
-  })
+const signOut = () => {
+  store.clear()
+  setupTrayAndMenu('Sign in to set up accounts...', initialMenu)
 }
 
-const launchAppWindow = () => {
-  const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '../index.html'),
-    protocol: 'file:',
-    slashes: true,
-  });
+const signIn = () => {
+  const ynabUrl = `https://app.youneedabudget.com/oauth/authorize?client_id=${process.env.YNAB_CLIENT_ID}&redirect_uri=${process.env.YNAB_REDIRECT_URL}&response_type=code`
+  const filter = {
+    urls: [process.env.YNAB_REDIRECT_URL + '*']
+  }
+
+  session.defaultSession.webRequest.onBeforeRequest(filter, async (details, callback) => {
+    const url = details.url
+    const values = queryString.parseUrl(url)
+    const code = values.query.code
+
+    const isAuth = await authUser(code)
+
+    if(isAuth) {
+      console.log('hererere');
+
+      // close the window out and update menu with accounts
+      mainWindow = null
+      const accounts = await getAccountsAndBalancesForUser()
+      parseAccountsForMenu(accounts)
+    }
+  })
+
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-    }
-  });
-  mainWindow.loadURL(startUrl);
+    height: 600
+  })
+  mainWindow.loadURL(ynabUrl)
   mainWindow.on('closed', function () {
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 }
+
+const setAccountAsTitle = (menuItem) => {
+  setupTrayAndMenu(menuItem.label, menuItem.menu.items)
+}
+
+const getUserAccountsAndSetupMenu = async () => {
+  console.log('here');
+
+  const accounts = await getAccountsAndBalancesForUser()
+  parseAccountsForMenu(accounts)
+}
+
+const parseAccountsForMenu = (accounts) => {
+  accounts.forEach((account, i) => {
+    dynamicMenu.unshift({
+      label: `${[account.name]}: ${numeral(account.balance*5.34).format('$0,0.00')}`,
+      type: 'normal',
+      click: (menuItem) => setAccountAsTitle(menuItem)
+    })
+
+    if(accounts.length === i+1) {
+      setupTrayAndMenu('Select an account...', dynamicMenu)
+    }
+  })
+}
+
+const setupTrayAndMenu = (title, menu) => {
+  const contextMenu = Menu.buildFromTemplate(menu)
+  tray.setTitle(title)
+  tray.setContextMenu(contextMenu)
+}
+
+app.on('window-all-closed', (e) => {
+  e.preventDefault()
+})
 
 app.whenReady().then(() => {
   tray = new Tray(nativeImage.createEmpty())
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Get Account Details', type: 'normal', click: () => getYNABDetails() },
-    { label: 'Configure Settings', type: 'normal', click: () => launchAppWindow() },
-    { role: 'quit', label: 'Quit', type: 'normal' }
-  ])
-  tray.setTitle('YNAB Balances')
-  tray.setContextMenu(contextMenu)
-})
+  console.log('woyyoyo:', store.get('ynabUserId'));
 
-ipcMain.on(channels.APP_INFO, (event) => {
-  event.sender.send(channels.APP_INFO, {
-    appName: app.getName(),
-    appVersion: app.getVersion(),
-  });
-});
+  if(store.get('ynabUserId')) {
+    getUserAccountsAndSetupMenu()
+  } else {
+    setupTrayAndMenu('Sign in to set up accounts...', initialMenu)
+  }
+})

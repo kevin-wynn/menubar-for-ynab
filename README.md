@@ -1,23 +1,13 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## YNAB-Menubar
 
 To get this project set up locally clone it down and `yarn install`
 
-You will need to create a `.env` file that contains:
+You will need to create a `.env` file that contains your client ID and Secret from YNAB
 
 ```
-YNAB_TOKEN=<<YOUR YNAB PERSONAL TOKEN>>
+YNAB_CLIENT_ID=<<YOUR YNAB CLIENT ID>>
+YNAB_CLIENT_SECRET=<<YOUR YNAB SECRET>>
+YNAB_REDIRECT_URL=<<YOUR YNAB REDIRECT URL>>
 ```
 
-In 1 terminal run:
-
-### `yarn start`
-- This starts the react server for displaying the app settings pages
-
-### `yarn start:electron`
-- This starts the electron app itself
-
-You should then see the app running in the menu bar and be able to interact.
-
-TODO: build process
+In your terminal run `yarn start` to start the electron app.
