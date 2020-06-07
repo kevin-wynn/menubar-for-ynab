@@ -2,21 +2,14 @@ const fetch = require('node-fetch')
 const { store } = require('../electron/store')
 const YNABPath = 'https://api.youneedabudget.com/v1'
 
-const authUser = async (code) => {
+const authUser = async (access_token) => {
   let user = {}
 
-  const YNABAuthUrl = `https://app.youneedabudget.com/oauth/token?client_id=${process.env.YNAB_CLIENT_ID}&client_secret=${process.env.YNAB_CLIENT_SECRET}&redirect_uri=${process.env.YNAB_REDIRECT_URL}&grant_type=authorization_code&code=${code}`
-
-  const response = await fetch(YNABAuthUrl, { method: 'POST' })
-  const authJson = await response.json()
-
-
-  user['acessToken'] = authJson.access_token
-  user['refreshToken'] = authJson.refresh_token
+  user['acessToken'] = access_token
 
   const userDetailsResponse = await fetch(`${YNABPath}/user`, {
       headers: {
-        Authorization: `Bearer ${authJson.access_token}`
+        Authorization: `Bearer ${access_token}`
       }
     })
 
@@ -25,8 +18,6 @@ const authUser = async (code) => {
   user['ynabUserId'] = userDetailsJson.data.user.id
 
   store.set('ynabUserId', user.ynabUserId)
-  store.set('accessToken', user.acessToken)
-  store.set('refreshToken', user.refreshToken)
 
   return true
 }

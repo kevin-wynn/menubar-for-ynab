@@ -1,4 +1,3 @@
-require('dotenv').config()
 const queryString = require('query-string')
 const { app, Menu, Tray, nativeImage, BrowserWindow, session } = require('electron')
 const numeral = require('numeral')
@@ -24,17 +23,19 @@ const signOut = () => {
 }
 
 const signIn = () => {
-  const ynabUrl = `https://app.youneedabudget.com/oauth/authorize?client_id=${process.env.YNAB_CLIENT_ID}&redirect_uri=${process.env.YNAB_REDIRECT_URL}&response_type=code`
+  const ynabUrl = `https://app.youneedabudget.com/oauth/authorize?client_id=d2ee67f9fce3706d9c311f6e8b95f15b335f3f3be3b48a3b901a434856ba5f22&redirect_uri=http://localhost/oauth/redirect&response_type=token`
   const filter = {
-    urls: [process.env.YNAB_REDIRECT_URL + '*']
+    urls: [ 'http://localhost/oauth/redirect' ]
   }
 
   session.defaultSession.webRequest.onBeforeRequest(filter, async (details, callback) => {
     const url = details.url
-    const values = queryString.parseUrl(url)
-    const code = values.query.code
+    const values = queryString.parseUrl(url, { parseFragmentIdentifier: true })
+    const access_token = values.fragmentIdentifier
 
-    const isAuth = await authUser(code)
+    console.log(details, values);
+
+    const isAuth = await authUser(access_token)
 
     if(isAuth) {
       // close the window out and update menu with accounts
@@ -50,7 +51,7 @@ const signIn = () => {
   })
   mainWindow.loadURL(ynabUrl)
   mainWindow.on('closed', function () {
-    mainWindow.hide()
+    mainWindow = null
   })
 }
 

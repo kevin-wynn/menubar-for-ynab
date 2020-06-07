@@ -12,7 +12,6 @@ You will need to create a `.env` file that contains your client ID and Secret fr
 
 ```
 YNAB_CLIENT_ID=<<YOUR YNAB CLIENT ID>>
-YNAB_CLIENT_SECRET=<<YOUR YNAB SECRET>>
 YNAB_REDIRECT_URL=<<YOUR YNAB REDIRECT URL>>
 ```
 
