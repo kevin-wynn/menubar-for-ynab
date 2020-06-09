@@ -2,7 +2,8 @@
 
 ## Installation
 
-
+Download our installer (mac support only at this time):
+[v0.1.0-alpha](https://github.com/kevin-wynn/menubar-for-ynab/releases/download/v0.1.0-alpha/Menubar.for.YNAB-0.1.0.dmg)
 
 ## Development
 
