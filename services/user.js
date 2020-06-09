@@ -3,10 +3,6 @@ const { store } = require('../electron/store')
 const YNABPath = 'https://api.youneedabudget.com/v1'
 
 const authUser = async (access_token) => {
-  let user = {}
-
-  user['acessToken'] = access_token
-
   const userDetailsResponse = await fetch(`${YNABPath}/user`, {
       headers: {
         Authorization: `Bearer ${access_token}`
@@ -14,11 +10,8 @@ const authUser = async (access_token) => {
     })
 
   const userDetailsJson = await userDetailsResponse.json()
-
-  user['ynabUserId'] = userDetailsJson.data.user.id
-
-  store.set('ynabUserId', user.ynabUserId)
-
+  store.set('ynabUserId', userDetailsJson.data.user.id)
+  store.set('accessToken', access_token)
   return true
 }
 
@@ -29,7 +22,7 @@ const getAccountsAndBalancesForUser = async () => {
     }
   })
 
-  const accountsJson = await userAccounts.json();
+  const accountsJson = await userAccounts.json()
   return accountsJson.data.accounts
 }
 

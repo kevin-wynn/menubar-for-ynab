@@ -11,7 +11,7 @@
     "electron-store": "^5.2.0",
     "node-fetch": "^2.6.0",
     "numeral": "^2.0.6",
-    "query-string": "^6.12.1"
+    "querystring": "^0.2.0"
   },
   "scripts": {
     "start": "electron-forge start",
@@ -27,7 +27,6 @@
         {
           "name": "@electron-forge/maker-dmg",
           "config": {
-            "background": "./assets/background.png",
             "format": "ULFO"
           }
         }
