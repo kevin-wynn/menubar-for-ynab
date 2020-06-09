@@ -1,3 +1,5 @@
+| [privacy page](https://kevin-wynn.github.io/menubar-for-ynab/privacy) | [changelog](https://kevin-wynn.github.io/menubar-for-ynab/changelog)
+
 ## Installation
 
 Download our installer (mac support only at this time):
