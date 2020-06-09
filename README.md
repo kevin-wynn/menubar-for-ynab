@@ -1,7 +1,3 @@
-# Menubar for YNAB
-
-A simple lightweight menubar application designed to show you the current balance of your YNAB accounts, updated every 30 minutes.
-
 ## Installation
 
 Download our installer (mac support only at this time):
