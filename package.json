@@ -1,6 +1,6 @@
 {
   "name": "menubar-for-ynab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple menubar built on electron to show YNAB balances easily",
   "productName": "Menubar for YNAB",
   "main": "electron/app.js",

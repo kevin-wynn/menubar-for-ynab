@@ -98,6 +98,8 @@ const setupTrayAndMenu = (title, menu) => {
   tray.setContextMenu(contextMenu)
 }
 
+app.dock.hide()
+
 app.on('window-all-closed', (e) => {
   e.preventDefault()
 })

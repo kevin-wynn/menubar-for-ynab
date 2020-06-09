@@ -7,3 +7,5 @@ Here you will find features and updates on a "per release" basis.
 ### Releases
   - v0.1.0-alpha
     - Our initial launch for the applcation
+  - v0.1.1-alpha
+    - Hides the icon from cmd+tag switching applications
