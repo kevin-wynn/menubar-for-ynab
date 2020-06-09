@@ -1,4 +1,4 @@
-| [home](https://kevin-wynn.github.io/menubar-for-ynab) | [changelog](https://kevin-wynn.github.io/menubar-for-ynab/changelog)
+| [home](https://kevin-wynn.github.io/menubar-for-ynab) | [releases and updates](https://kevin-wynn.github.io/menubar-for-ynab/changes)
 
 ## Privacy Page
 

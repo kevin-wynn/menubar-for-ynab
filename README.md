@@ -1,4 +1,4 @@
-| [privacy page](https://kevin-wynn.github.io/menubar-for-ynab/privacy) | [changelog](https://kevin-wynn.github.io/menubar-for-ynab/changelog)
+| [privacy page](https://kevin-wynn.github.io/menubar-for-ynab/privacy) | [releases and updates](https://kevin-wynn.github.io/menubar-for-ynab/changes)
 
 ## Installation
 
