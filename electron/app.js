@@ -9,7 +9,7 @@ const CronJob = require('cron').CronJob
 let tray
 let mainWindow
 let chosenAccount
-let cronTime = '*/30 * * * *'
+let cronTime = '*/10 * * * *'
 
 const initialMenu = [
   { label: 'Sign In', type: 'normal', click: () => signIn() },
@@ -22,7 +22,7 @@ const signOut = () => {
 }
 
 const signIn = () => {
-  const ynabUrl = `https://app.youneedabudget.com/oauth/authorize?client_id=d2ee67f9fce3706d9c311f6e8b95f15b335f3f3be3b48a3b901a434856ba5f22&redirect_uri=http://localhost/oauth/redirect&response_type=token`
+  const ynabUrl = `https://app.youneedabudget.com/oauth/authorize?client_id=d2ee67f9fce3706d9c311f6e8b95f15b335f3f3be3b48a3b901a434856ba5f22&redirect_uri=http://localhost/oauth/redirect&response_type=code`
   const filter = {
     urls: [ 'http://localhost/oauth/redirect' ]
   }
@@ -59,7 +59,6 @@ const getUserAccountsAndSetupMenu = async () => {
   parseAccountsForMenu(accounts)
   if(mainWindow) mainWindow.hide()
 
-  // cron for refreshing accounts ever 30 minutes
   const job = new CronJob(cronTime, function() {
 
     getUserAccountsAndSetupMenu();
