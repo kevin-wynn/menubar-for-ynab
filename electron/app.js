@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { app, Menu, Tray, nativeImage, BrowserWindow, session } = require('electron')
 const url = require('url')
 const querystring = require('querystring')
